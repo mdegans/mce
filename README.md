@@ -23,7 +23,7 @@ python3 ./setup.py install
 
 ## Example Usage:
 
-To run detections on multiple youtube videos/playlists:
+To run detections on multiple youtube videos/playlists (requires youtube-dl which can be installed with `pip3 install youtube-dl`):
 ```mce $(youtube-dl -f best -g https://www.youtube.com/watch?v=pJ5cg83D5AE) $(youtube-dl -f best -g https://www.youtube.com/watch?v=peC1JD9gEKc) $(youtube-dl -f best -g https://www.youtube.com/watch?v=0LYE669fbpU)```
 
 Any uri supported by uridecodebin should work.
