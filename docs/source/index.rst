@@ -10,13 +10,9 @@ Welcome to Mechanical Compound Eye's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-.. automodule:: mce
-   :members:
-
 .. automodule:: mce.pipeline
    :members:
 
-.. automodule:: mce.bus
 
 Indices and tables
 ==================
