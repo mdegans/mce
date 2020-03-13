@@ -102,7 +102,7 @@ def ensure_config() -> str:
     return filename
 
 
-def main(sources: Iterable[str], pie_config: str):
+def main(sources: Iterable[str], pie_config: str, live:bool):
     """
     Main function for mce. Does not parse the command line.
 
@@ -120,7 +120,7 @@ def main(sources: Iterable[str], pie_config: str):
     import mce.pipeline
 
     # do the gstreamer dance, elegantly.
-    with mce.pipeline.DeepStreamApp(pie_config, sources=sources) as pipeline:
+    with mce.pipeline.DeepStreamApp(pie_config, sources=sources, live=live) as pipeline:
         pipeline.ready()
         pipeline.play()
 
@@ -140,6 +140,8 @@ def cli_main(args: Iterable[str] = None):
     ap.add_argument('sources', help="urls or file sources", nargs='+')
     # todo: move ensure_config since it requires an import of mce and on the
     #  the Nano this is kind of heavy and leads to a pause before arg parsing
+    ap.add_argument('--live', help="use with live sources (nvstreammux live-sources=True)",
+                    action='store_true')
     ap.add_argument('--config', help='primary inference config',
                     default=ensure_config())
     ap.add_argument('-v', '--verbose', help='print DEBUG log level',
@@ -152,7 +154,7 @@ def cli_main(args: Iterable[str] = None):
     logging.basicConfig(
         level=logging.DEBUG if args.verbose else logging.INFO)
 
-    main(args.sources, args.config)
+    main(args.sources, args.config, args.live)
 
 
 if __name__ == '__main__':

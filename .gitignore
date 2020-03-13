@@ -1,2 +1,4 @@
 dist
 mce.egg-info
+__pycache__
+docs/build/*
