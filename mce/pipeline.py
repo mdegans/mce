@@ -99,6 +99,9 @@ __all__ = [
     'GhostBin',
     'make_element',
     'make_elements',
+    'link',
+    'bin_to_pdf',
+    'StateSetter',
 ]
 
 
@@ -125,13 +128,13 @@ class PipelineCreationError(RuntimeError):
 def bin_to_pdf(bin_: Gst.Bin, details: Gst.DebugGraphDetails, filename: str,
                ) -> Optional[str]:
     """
-    Dump a Gst.Bin to pdf using debug_bin_to_dot_file and graphviz.
+    Dump a Gst.Bin to pdf using 
+    `Gst.debug_bin_to_dot_file <https://lazka.github.io/pgi-docs/Gst-1.0/functions.html#Gst.debug_bin_to_dot_file>`_
+    and graphviz.
     Will launch the 'dot' subprocess in the background with Popen.
     Does not check whether the process completes, but a .dot is
-    created in any case. Has the same arguments as Gst.debug_bin_to_dot_file.
-
-    **Requires GST_DEBUG_DUMP_DOT_DIR to be defined as an environment variable**
-    (If anybody knows a good way around this, please submit a PR)
+    created in any case. Has the same arguments as 
+    `Gst.debug_bin_to_dot_file <https://lazka.github.io/pgi-docs/Gst-1.0/functions.html#Gst.debug_bin_to_dot_file>`_
 
     :returns: the path to the created file (.dot or .pdf) or None if
               GST_DEBUG_DUMP_DOT_DIR not found in os.environ
@@ -173,7 +176,7 @@ def bin_to_pdf(bin_: Gst.Bin, details: Gst.DebugGraphDetails, filename: str,
 
 def make_element(type_name: str, name: str) -> Gst.Element:
     """
-    Run Gst.ElementFactory.make(|type_name|, |name|) and log to DEBUG level.
+    Run Gst.ElementFactory.make(type_name, name) and log to DEBUG level.
 
     :arg type_name: the element type to create as str (eg. "fakesink")
     :arg name: the unique name to give the element. It doesn't actually have
@@ -193,7 +196,7 @@ def make_element(type_name: str, name: str) -> Gst.Element:
 def make_elements(bin_description: BinDescription
                   ) -> List[Gst.Element]:
     """
-    :returns: a Gst.Element for each element described in in |bin_description|.
+    :returns: a Gst.Element for each element described in in bin_description.
 
     note: If an element evaluates to false (eg, None), it's addition will be
           silently skipped. See make_inference_description for why, and example
@@ -416,11 +419,11 @@ def make_inference_description(pie_config: str,
 def add_iterable(bin_: Gst.Bin, elements: Iterable[Gst.Element], link_=True):
     """
     Adds each Gst.Element in a supplied Iterable to a Gst.Bin and
-    links them together *linearly* in supplied order, using auto_link()
+    links them together *linearly* in supplied order, using `auto_link`_
 
     :arg bin_: the Gst.Bin to add the elements to
     :arg elements: an Iterable (list, tuple, generator) of Gst.Element
-    :param link_: whether to auto-link the elements in supplied order
+    :param ``link_``: whether to auto-link the elements in supplied order
            (default True)
 
     todo: add |ghost| parameter to run .make_ghost() if the supplied Bin is a
@@ -435,16 +438,18 @@ def add_iterable(bin_: Gst.Bin, elements: Iterable[Gst.Element], link_=True):
 
 
 class StateSetter(Gst.Pipeline):
-    """a Gst.Pipeline with more pythonic state setting"""
+    """a Gst.Pipeline with easier state setting"""
 
     def set_state(self, state: Gst.State, async_=False, timeout=10, pdf=True
                   ) -> Gst.StateChangeReturn:
         """
+        .. _set_state:
         Sets the element to a given state, like it's parent method, however also
-        handles some logging and does a .get_state() check if async_=False
+        handles some logging and does a .get_state() check if ``async_``=False
+
         :param state: a Gst.State to change to
-        :param async_: if True, and the Gst.StateChangeReturn is ASYNC, wait...
-        :param timeout: seconds if async_ is True and StateChangeReturn == async
+        :param ``async_``: if True, and the Gst.StateChangeReturn is ASYNC, wait...
+        :param timeout: seconds if ``async_`` is True and StateChangeReturn == async
         :param pdf: if True, dumps a pdf before and after state change
         :returns:
         """
@@ -468,15 +473,20 @@ class StateSetter(Gst.Pipeline):
         return ret
 
     def ready(self, **kwargs) -> Gst.StateChangeReturn:
-        """Set the pipeline to READY state."""
+        """
+        Set the pipeline to READY state.
+
+        :param kwargs: are passed to :meth:`~set_state`
+        """
         return self.set_state(Gst.State.READY, **kwargs)
 
     def play(self, loop_also=True, **kwargs) -> Gst.StateChangeReturn:
         """
         Set the pipeline to PLAYING state
 
-        :param loop_also: also .run() any Glib.MainLoop at ._loop if one is
+        :param loop_also: also .run() any Glib.MainLoop at .``_loop`` if one is
                found and not .is_running()
+        :param kwargs: are passed to :meth:`~set_state`
         """
         ret = self.set_state(Gst.State.PLAYING, **kwargs)
         if loop_also and hasattr(self, '_loop') and not self._loop.is_running():
@@ -484,19 +494,28 @@ class StateSetter(Gst.Pipeline):
         return ret
 
     def pause(self, **kwargs) -> Gst.StateChangeReturn:
-        """Set the pipeline to PAUSED state"""
+        """
+        Set the pipeline to PAUSED state
+
+        :param kwargs: are passed to :meth:`~set_state`
+        """
         return self.set_state(Gst.State.PAUSED, **kwargs)
 
     def null(self, **kwargs) -> Gst.StateChangeReturn:
-        """set the pipeline to NULL state"""
+        """
+        set the pipeline to NULL state
+
+        :param kwargs: are passed to :meth:`~set_state`
+        """
         return self.set_state(Gst.State.NULL, **kwargs)
 
     def quit(self, loop_also=True, **kwargs) -> Gst.StateChangeReturn:
         """
         Set the DeepStreamApp to NULL and (optionally) quits the MainLoop.
 
-        :param loop_also: also .quit() any GLib.MainLoop  at ._loop if one is
+        :param loop_also: also .quit() any GLib.MainLoop  at .``_loop`` if one is
                found and .is_running().
+        :param kwargs: are passed to :meth:`~set_state`
         """
         ret = self.null(**kwargs)
         if loop_also and hasattr(self, 'loop') and self._loop.is_running():
@@ -508,24 +527,21 @@ class GhostBin(Gst.Bin):
     # i found "link_maybe_ghosting" in the docs after creating this so I may
     # remove this. Less code is better.
     """
-    This is a Gst.Bin, but for sanity's sake a .make_ghost method is added
+    This is a Gst.Bin, but for convenience, a :meth:`~make_ghost` method is added
     to easily add ghost pads for inner unlinked pads so that the Bin itself
     may be linked like any other element.
 
     note: There is a *minor* performance penalty to ghosting a Pad.
+
+    :arg name: the (hopefully unique) name to give the GhostBin
+    :param bd: a BinDescription describing the GhostBin. Without this an
+        empty GhostBin will be created.
+    :param ``link_``: if true, auto-link the GhostBin's children in the order
+        supplied in the BinDescription Iterable.
     """
     def __init__(self, name: str,
                  bd: BinDescription = None,
                  link_: bool = True):
-        """
-        Create a GhostBin.
-
-        :arg name: the (hopefully unique) name to give the GhostBin
-        :param bd: a BinDescription describing the GhostBin. Without this an
-               empty GhostBin will be created.
-        :param link_: if true, auto-link the GhostBin's children in the order
-               supplied in the BinDescription Iterable.
-        """
         logger.debug(
             f"Creating {self.__class__.__name__} {name} "
             f"with {len(bd) if bd is not None else 'no'} elements"
@@ -548,8 +564,7 @@ class GhostBin(Gst.Bin):
 
     def add_iterable(self, elements: Iterable[Gst.Element], link_=True):
         """
-        run add_iterable(self, elements, link_)
-        (see mce.pipeline.add_iterable documentation)
+        adds an iterable of elements to self and links them if ``link_`` is truthy
         """
         # noinspection PyTypeChecker
         add_iterable(self, elements, link_=link_)
@@ -783,22 +798,11 @@ class DeepStreamApp(StateSetter):
     """
     A Gst.Pipeline subclass with extra functionality specific to DeepStream.
 
-    - Supports __getitem__ so it is possible to access elements by name like:
-
-    app['source'].link(app['sink'])
-
-    - Supports __iter__ so you can iterate over the Gst.Elements within like:
-
-    for element in app:
-        foo(element)
-
-    - Is a context manager, so you can use the 'with' keyword, and the standard
-    obnoxious gstreamer ritual dance is performed for you.
-
-    - Has ready(), play(), pause(), and quit() methods to set the pipeline state
-    and control the MainLoop (if loop_also=True)
-
-    TODO(mdegans): doctests
+    :arg pie_config: path to the primary inference config file
+    :param sources: urls or filenames to add and link on __enter__
+    :param loop: a GLib.MainLoop (or one will be created)
+    :param bus_cb: a bus callback, (default mce.bus.on_message)
+    :param on_buffer: a per-buffer callback to attach to osd element (default: mce.osd.on_buffer)
     """
 
     _muxer = None  # type: Gst.Element
@@ -811,16 +815,6 @@ class DeepStreamApp(StateSetter):
                  bus_cb: BusCallback = mce.bus.on_message,
                  on_buffer: PadProbeCallback = mce.osd.on_buffer,
                  ):
-        """
-        Create a DeepStreamApp
-
-        :arg pie_config: path to the primary inference config file
-        :param sources: urls or filenames to and link on __enter__
-        :param loop: a GLib.MainLoop (or one will be created)
-        :param bus_cb: a bus callback, (default mce.bus.on_message)
-        :param on_buffer: a per-buffer callback to attach to osd element
-               (default: mce.osd.on_buffer)
-        """
         logger.debug(f"{self.__class__.__name__}.__init__")
         Gst.Pipeline.__init__(self)
         self._pie_config = pie_config
