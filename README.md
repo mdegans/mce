@@ -37,5 +37,6 @@ Any uri supported by uridecodebin should work.
 ## Known Issues
 - tests need to be written
 - the decoder spews warning messages... not sure why
+- videos don't always play at the correct rate. the --live option may help with some sources
 - nvinfer doesn't respect batch-engine-file set at runtime for loading a file,
 leading to long start times.

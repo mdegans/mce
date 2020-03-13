@@ -744,13 +744,13 @@ def youtube_in_uris(uris: Iterable[str]) -> bool:
         for uri in uris)
 
 
-def convert_uris(uris: Iterable[str], ydl: youtube_dl.YoutubeDL = None) -> Iterator[str]:
+def convert_uris(uris: Iterable[str], ydl = None) -> Iterator[str]:
     """
     :yields: file uris for uris that are files and actual video links for
     youtube uris.
 
-    :param uris:
-    :param ydl:
+    :param uris: an Iterable of uris
+    :param ydl: youtube_dl.YoutubeDL instance
     """
     # convert uris to a list, just in case it's an iterator
     _uris = list(uris)
