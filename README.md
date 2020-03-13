@@ -22,8 +22,6 @@ python3 ./setup.py install
 ```
 ## Faq
 - **Did you come up with the name?** [No](https://genius.com/Meshuggah-the-demons-name-is-surveillance-lyrics).
-- **Can I use this commercially?** No. It's intended only for home use to *avoid*
-the privacy implications of the cloud, not add to them.
 
 ## Known Issues
 - half the tests fail. they need to be rewritten
