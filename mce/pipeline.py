@@ -99,6 +99,7 @@ __all__ = [
     'GhostBin',
     'make_element',
     'make_elements',
+    'make_inference_description',
     'link',
     'bin_to_pdf',
     'StateSetter',
@@ -343,6 +344,7 @@ def make_inference_description(pie_config: str,
                                sink: str = DEFAULT_SINK,
                                num_sources: int = 1,
                                out_scale: Tuple[int, int] = (1920, 1080),
+                               live: True,
                                ) -> BinDescription:
     """
     :returns: a BinDescription (Sequence of ElementDescription) describing a
@@ -364,6 +366,7 @@ def make_inference_description(pie_config: str,
            gstreamer element). If it doesn't start with "nv" it won't perform
            well, if it works at all. 'qos' and 'sync' will be set to false on
            this element automatically.
+    :param live: whether to specify live sources to the stream muxer
     """
     rows_and_columns = calc_rows_and_columns(num_sources)
     in_scale = calc_in_scale(out_scale, rows_and_columns)
@@ -377,7 +380,7 @@ def make_inference_description(pie_config: str,
                 # https://en.wikipedia.org/wiki/Millisecond#Examples
                 # a single frame of 29.97 fps seems reasonable
                 'batched-push-timeout': 33367,
-                'live-source': True,
+                'live-source': live,
             },
         ),
         ElementDescription(
@@ -803,6 +806,7 @@ class DeepStreamApp(StateSetter):
     :param loop: a GLib.MainLoop (or one will be created)
     :param bus_cb: a bus callback, (default mce.bus.on_message)
     :param on_buffer: a per-buffer callback to attach to osd element (default: mce.osd.on_buffer)
+    :param kwargs: passed to the infernce
     """
 
     _muxer = None  # type: Gst.Element
@@ -814,7 +818,7 @@ class DeepStreamApp(StateSetter):
                  loop: Optional[GLib.MainLoop] = None,
                  bus_cb: BusCallback = mce.bus.on_message,
                  on_buffer: PadProbeCallback = mce.osd.on_buffer,
-                 ):
+                 **kwargs):
         logger.debug(f"{self.__class__.__name__}.__init__")
         Gst.Pipeline.__init__(self)
         self._pie_config = pie_config
@@ -822,6 +826,7 @@ class DeepStreamApp(StateSetter):
         self._loop = loop if loop else GLib.MainLoop()
         self._bus_cb = bus_cb
         self._on_buffer = on_buffer
+        self._inference_kwargs = kwargs
 
     def __enter__(self):  # noqa: D105
         logger.debug(f"{self.name}.__enter__")
@@ -840,6 +845,7 @@ class DeepStreamApp(StateSetter):
             self._pie_config,
             on_buffer=self._on_buffer,
             num_sources=len(self._uris),
+            **self._inference_kwargs,
         )
         self.add(self._inference_bin)
 
