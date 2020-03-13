@@ -24,7 +24,9 @@ python3 ./setup.py install
 ## Example Usage:
 
 To run detections on multiple youtube videos/playlists (requires youtube-dl which can be installed with `pip3 install youtube-dl`):
-```mce $(youtube-dl -f best -g https://www.youtube.com/watch?v=pJ5cg83D5AE) $(youtube-dl -f best -g https://www.youtube.com/watch?v=peC1JD9gEKc) $(youtube-dl -f best -g https://www.youtube.com/watch?v=0LYE669fbpU)```
+```
+mce $(youtube-dl -f best -g https://www.youtube.com/watch?v=pJ5cg83D5AE) $(youtube-dl -f best -g https://www.youtube.com/watch?v=peC1JD9gEKc) $(youtube-dl -f best -g https://www.youtube.com/watch?v=0LYE669fbpU)
+```
 
 Any uri supported by uridecodebin should work.
 
@@ -35,5 +37,6 @@ Any uri supported by uridecodebin should work.
 ## Known Issues
 - tests need to be written
 - the decoder spews warning messages... not sure why
+- videos don't always play at the correct rate. the --live option may help with some sources
 - nvinfer doesn't respect batch-engine-file set at runtime for loading a file,
 leading to long start times.
