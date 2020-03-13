@@ -9,7 +9,7 @@ with open(os.path.join(THIS_DIR, 'README.md')) as readme:
 
 setuptools.setup(
     name='mce',
-    version='0.1.1',
+    version='0.1.2',
     description='Mechanical Compound Eye',
     long_description=long_description,
     long_description_content_type='text/markdown',
