@@ -9,7 +9,7 @@ with open(os.path.join(THIS_DIR, 'README.md')) as readme:
 
 setuptools.setup(
     name='mce',
-    version='0.1.0',
+    version='0.1.1',
     description='Mechanical Compound Eye',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -30,7 +30,7 @@ setuptools.setup(
         'Programming Language :: Python :: 3.8',
     ],
     python_requires='>=3.6',
-    install_requires=['requests'],
+    # install_requires=['requests'],
     packages=['mce'],
     package_data={
         'mce': [
@@ -43,7 +43,7 @@ setuptools.setup(
     author='Michael de Gans',
     author_email='michael.john.degans@gmail.com',
     project_urls={
-        'Bug Reports': 'https://github.com/mdegans/tegrity/issues',
-        'Source': 'https://github.com/mdegans/tegrity/',
+        'Bug Reports': 'https://github.com/mdegans/mce/issues',
+        'Source': 'https://github.com/mdegans/mce/',
     },
 )

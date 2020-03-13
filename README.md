@@ -22,7 +22,10 @@ python3 ./setup.py install
 ```
 ## Faq
 - **Did you come up with the name?** [No](https://genius.com/Meshuggah-the-demons-name-is-surveillance-lyrics).
+- **How can I customize this?** The primary inference config is in ~/.mce/pie.conf
 
 ## Known Issues
-- half the tests fail. they need to be rewritten
+- tests need to be written
 - the decoder spews warning messages... not sure why
+- nvinfer doesn't respect batch-engine-file set at runtime for loading a file,
+leading to long start times.

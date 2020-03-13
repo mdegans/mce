@@ -24,6 +24,7 @@ import os
 import platform
 import sys
 
+__version__ = "0.1.1"
 __all__ = [
     'DEBUG',
     'DEEPSTREAM_BINDINGS_PATH',
@@ -33,7 +34,7 @@ __all__ = [
     'pyds',
 ]
 
-DEBUG = True  # turns on extra logging and debug code (including --verbose)
+DEBUG = False  # turns on extra logging and debug code (including --verbose)
 
 DEEPSTREAM_ROOT = '/opt/nvidia/deepstream/deepstream-4.0'
 DEEPSTREAM_MODELS_ROOT = os.path.join(
